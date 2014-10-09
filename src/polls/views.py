@@ -1,9 +1,10 @@
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
+from django.views.decorators.csrf import csrf_exempt
 
 from polls.models import Question, Choice
 
@@ -36,19 +37,40 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
+    from google.appengine.api import taskqueue
+
     p = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = p.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
+    choice = request.POST.get('choice')
+    if not choice:
         # Redisplay the question voting form.
         return render(request, 'polls/detail.html', {
             'question': p,
             'error_message': "You didn't select a choice.",
         })
+
     else:
-        selected_choice.votes += 1
-        selected_choice.save()
+        taskqueue.add(url=reverse("polls:process-vote"),
+                      params={
+                          "question_id": question_id,
+                          "choice": choice,
+                      },
+                      queue_name="processVotes")
+
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(p.id,)))
+
+@csrf_exempt
+def process_vote(request):
+    import time
+    time.sleep(5)
+
+    question_id = request.POST["question_id"]
+
+    p = get_object_or_404(Question, pk=question_id)
+    selected_choice = p.choice_set.get(pk=request.POST['choice'])
+    selected_choice.votes += 1
+    selected_choice.save()
+
+    return HttpResponse(status=201)

@@ -1,0 +1,11 @@
+
+# https://cloud.google.com/appengine/docs/python/config/queue?hl=es
+queue:
+- name: processVotes
+  rate: 20/s
+  max_concurrent_requests: 10
+  retry_parameters:
+    min_backoff_seconds: 60
+    max_backoff_seconds: 1800
+    max_doublings: 0
+    task_age_limit: 2d
