@@ -1,5 +1,8 @@
 
+from django.conf import settings
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
@@ -61,6 +64,7 @@ def vote(request, question_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(p.id,)))
 
+
 @csrf_exempt
 def process_vote(request):
     import time
@@ -72,5 +76,18 @@ def process_vote(request):
     selected_choice = p.choice_set.get(pk=request.POST['choice'])
     selected_choice.votes += 1
     selected_choice.save()
+
+    return HttpResponse(status=201)
+
+
+@csrf_exempt
+def email_summary(request):
+    total_votes = Choice.objects.all().aggregate(total_votes=Sum('votes'))
+
+    subject = 'Pyowa Summary Polling Job'
+    body = 'There have been {total_votes}.'.format(**total_votes)
+
+    send_mail(subject, body, settings.DEFAULT_FROM_EMAIL,
+        ['receiver@example.com'], fail_silently=False)
 
     return HttpResponse(status=201)

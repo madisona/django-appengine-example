@@ -1,0 +1,4 @@
+cron:
+- description: daily summary job
+  url: /polls/tasks/email-summary
+  schedule: every 5 minutes
