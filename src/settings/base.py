@@ -8,6 +8,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
+import fix_path
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from os import pardir
 from os.path import abspath, dirname, join
@@ -16,6 +18,8 @@ BASE_DIR = abspath(join(dirname(__file__), pardir))
 
 SECRET_KEY = 'bg8ko%lqx#ijy%$(tc^$vnu=erf1hr0oiw4#ap!c8tddb^9#48'
 
+SERVER_EMAIL = 'test@example.com'
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # Application definition
 
@@ -67,6 +71,7 @@ TEMPLATE_DIRS = (
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
+STATIC_ROOT = join(BASE_DIR, 'production_static')
 STATIC_URL = '/static/'
 
 

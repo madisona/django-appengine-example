@@ -1,7 +1,7 @@
 
 from .dev import *
 
-TEST_RUNNER = "django.test.runner.DiscoverRunner"
+TEST_RUNNER = "appengine_utils.test_utils.AppEngineTestRunner"
 
 DATABASES = {
     'default': {

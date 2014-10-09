@@ -1,0 +1,6 @@
+
+*.py[co]
+
+# Don't include project dependencies
+src/lib
+src/production_static/*

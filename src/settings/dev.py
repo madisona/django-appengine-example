@@ -20,3 +20,5 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
+
+EMAIL_BACKEND = 'appengine_utils.mail.EmailBackend'
